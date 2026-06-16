@@ -1,0 +1,10 @@
+# compiled binary
+/termiedos
+termiedos
+# go
+*.test
+*.out
+# goreleaser
+/dist/
+# os
+.DS_Store
