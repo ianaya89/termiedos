@@ -7,6 +7,19 @@ y el proyecto sigue [Versionado Semántico](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-06-16
+
+### Añadido
+
+- **Goleadores**: lista de autores de gol por equipo con el minuto en el detalle de partido.
+- **Tarjetas**: cronología de amonestaciones (amarilla, roja, doble amarilla) con minuto y equipo.
+- **Estadísticas**: posesión, remates, faltas y demás métricas como barras proporcionales.
+- **Forma reciente**: últimos resultados de cada equipo como fichas G/E/P.
+- **Formaciones**: onces titulares de ambos equipos lado a lado, con dorsal, capitán (C),
+  director técnico y marcadores de gol/tarjeta/cambio.
+- **Historial**: balance head-to-head y enfrentamientos previos con su marcador.
+- Scroll en el detalle de partido (`↑↓`, `g`/`G`, `pgup`/`pgdn`) con indicador de desbordamiento.
+
 ## [0.1.0] - 2026-06-16
 
 Primera versión pública.
@@ -25,5 +38,6 @@ Primera versión pública.
 - Distribución: CI con GitHub Actions, binarios multiplataforma con GoReleaser,
   script de instalación y cask de Homebrew.
 
-[Unreleased]: https://github.com/ianaya89/termiedos/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/ianaya89/termiedos/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/ianaya89/termiedos/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/ianaya89/termiedos/releases/tag/v0.1.0
