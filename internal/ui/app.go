@@ -60,8 +60,9 @@ type model struct {
 	lgOffset  int
 
 	// game
-	game     *api.GameCenter
-	gameFrom screen
+	game       *api.GameCenter
+	gameFrom   screen
+	gameOffset int
 }
 
 func New() model {
@@ -325,6 +326,7 @@ func (m model) openGame(id string, from screen) (model, tea.Cmd) {
 	m.screen = gameScreen
 	m.gameFrom = from
 	m.game = nil
+	m.gameOffset = 0
 	m.loading = true
 	return m, m.fetchGame(id)
 }
@@ -402,11 +404,43 @@ func (m *model) nextRound() {
 }
 
 func (m model) keyGame(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+	max := m.gameMaxOffset(m.w, m.gameViewHeight())
 	switch msg.String() {
 	case "esc", "backspace", "b":
 		m.screen = m.gameFrom
 		m.loading = false
 		return m, nil
+	case "up", "k":
+		if m.gameOffset > 0 {
+			m.gameOffset--
+		}
+	case "down", "j":
+		if m.gameOffset < max {
+			m.gameOffset++
+		}
+	case "pgup":
+		m.gameOffset -= 10
+	case "pgdown", " ":
+		m.gameOffset += 10
+	case "g", "home":
+		m.gameOffset = 0
+	case "G", "end":
+		m.gameOffset = max
+	}
+	if m.gameOffset < 0 {
+		m.gameOffset = 0
+	}
+	if m.gameOffset > max {
+		m.gameOffset = max
 	}
 	return m, nil
+}
+
+// gameViewHeight mirrors View()'s body height (full height minus header + help).
+func (m model) gameViewHeight() int {
+	h := m.h - 2
+	if h < 1 {
+		h = 1
+	}
+	return h
 }

@@ -93,7 +93,7 @@ func (m model) renderHelp() string {
 	case leagueScreen:
 		keys = "tab posiciones/fixture · ←→ fecha · ↑↓ scroll · enter partido · b atrás · r recargar · q salir"
 	case gameScreen:
-		keys = "b atrás · r recargar · q salir"
+		keys = "↑↓ scroll · b atrás · r recargar · q salir"
 	default:
 		keys = "↑↓ mover · ←→ día · t hoy · tab panel · enter abrir · r recargar · q salir"
 	}

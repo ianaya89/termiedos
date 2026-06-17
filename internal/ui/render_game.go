@@ -13,10 +13,14 @@ func (m model) renderGame(width, height int) string {
 	if m.game == nil {
 		return lipgloss.NewStyle().Width(width).Padding(1, 2).Foreground(colMuted).Render(m.spinner.View() + " cargando…")
 	}
-	g := m.game.Game
-	if len(g.Teams) < 2 {
+	if len(m.game.Game.Teams) < 2 {
 		return lipgloss.NewStyle().Width(width).Padding(1, 2).Render("Sin datos del partido.")
 	}
+	return scrollBox(m.renderGameBody(width), height, m.gameOffset)
+}
+
+func (m model) renderGameBody(width int) string {
+	g := m.game.Game
 	home, away := g.Teams[0], g.Teams[1]
 
 	stage := g.StageRoundName
@@ -82,6 +86,10 @@ func (m model) renderGame(width, height int) string {
 		sections = append(sections, "", styleSection.Render("🟨 Tarjetas"), cards)
 	}
 
+	if form := m.renderForm(g); form != "" {
+		sections = append(sections, "", styleSection.Render("📈 Forma"), form)
+	}
+
 	if len(g.TVNetworks) > 0 {
 		var tv []string
 		for _, n := range g.TVNetworks {
@@ -94,6 +102,14 @@ func (m model) renderGame(width, height int) string {
 		sections = append(sections, "", styleSection.Render("📊 Estadísticas"), stats)
 	}
 
+	if lineups := m.renderLineups(g, innerLeft); lineups != "" {
+		sections = append(sections, "", styleSection.Render("👥 Formaciones"), lineups)
+	}
+
+	if h2h := m.renderH2H(g); h2h != "" {
+		sections = append(sections, "", styleSection.Render("🆚 Historial"), h2h)
+	}
+
 	if len(g.GameInfo) > 0 {
 		sections = append(sections, "")
 		sections = append(sections, styleSection.Render("Información"))
@@ -103,5 +119,50 @@ func (m model) renderGame(width, height int) string {
 	}
 
 	body := lipgloss.JoinVertical(lipgloss.Left, sections...)
-	return lipgloss.NewStyle().Width(width).MaxHeight(height).Padding(1, 1).Render(body)
+	return lipgloss.NewStyle().Width(width).Padding(1, 1).Render(body)
+}
+
+// scrollBox vertically windows the rendered body to height lines starting at
+// offset, adding a ▲/▼ hint on the last line when content overflows.
+func scrollBox(body string, height, offset int) string {
+	lines := strings.Split(body, "\n")
+	if height < 1 {
+		height = 1
+	}
+	if len(lines) <= height {
+		return body
+	}
+	max := len(lines) - height
+	if offset > max {
+		offset = max
+	}
+	if offset < 0 {
+		offset = 0
+	}
+	win := append([]string(nil), lines[offset:offset+height]...)
+	var hint string
+	switch {
+	case offset == 0:
+		hint = styleClockFinal.Render(" ▼")
+	case offset >= max:
+		hint = styleClockFinal.Render(" ▲")
+	default:
+		hint = styleClockFinal.Render(" ▲▼")
+	}
+	w := lipgloss.Width(lines[0])
+	last := win[len(win)-1]
+	win[len(win)-1] = padRight(last, w-lipgloss.Width(hint)) + hint
+	return strings.Join(win, "\n")
+}
+
+// gameMaxOffset is the largest valid scroll offset for the detail body.
+func (m model) gameMaxOffset(width, height int) int {
+	if m.game == nil || len(m.game.Game.Teams) < 2 {
+		return 0
+	}
+	n := strings.Count(m.renderGameBody(width), "\n") + 1
+	if n <= height {
+		return 0
+	}
+	return n - height
 }

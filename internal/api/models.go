@@ -234,6 +234,80 @@ type StatItem struct {
 	Percentages []float64 `json:"percentages"`
 }
 
+// ---- lineups ----
+
+type LineupCards struct {
+	Yellow  bool `json:"yellow"`
+	Red     bool `json:"red"`
+	RedType int  `json:"red_type"`
+}
+
+type LineupGoals struct {
+	Goals    int `json:"goals"`
+	OwnGoals int `json:"own_goals"`
+}
+
+type LineupSub struct {
+	HasSubstitution bool    `json:"has_substitution"`
+	Time            float64 `json:"time"`
+}
+
+type LineupEvents struct {
+	Goals        LineupGoals `json:"goals"`
+	Cards        LineupCards `json:"cards"`
+	Substitution LineupSub   `json:"substitution"`
+}
+
+type LineupPlayer struct {
+	JerseyNum int          `json:"jersey_num"`
+	Name      string       `json:"name"`
+	ShortName string       `json:"player_short_name"`
+	Position  string       `json:"position"`
+	IsCaptain bool         `json:"is_captain"`
+	Events    LineupEvents `json:"events"`
+}
+
+type LineupTeam struct {
+	Status    string         `json:"status"`
+	Formation string         `json:"formation"`
+	TeamNum   int            `json:"team_num"`
+	Starting  []LineupPlayer `json:"starting"`
+	Bench     []LineupPlayer `json:"bench"`
+	Staff     []LineupPlayer `json:"staff"`
+}
+
+// Coach returns the head coach name, if present in the staff list.
+func (t LineupTeam) Coach() string {
+	for _, s := range t.Staff {
+		return s.ShortName
+	}
+	return ""
+}
+
+type Lineups struct {
+	SupportVisual bool         `json:"support_visual_lineups"`
+	Teams         []LineupTeam `json:"teams"`
+}
+
+type Players struct {
+	Lineups Lineups `json:"lineups"`
+}
+
+// ---- head-to-head + form ----
+
+type HeadToHead struct {
+	HomeWins int    `json:"home_wins"`
+	AwayWins int    `json:"away_wins"`
+	Draws    int    `json:"draws"`
+	Games    []Game `json:"games"`
+}
+
+// RecentForm holds result codes (0=loss, 1=win, 2=draw), most recent first.
+type RecentForm struct {
+	Home []int `json:"home"`
+	Away []int `json:"away"`
+}
+
 type GameCenter struct {
 	TTL  int        `json:"TTL"`
 	Game GameDetail `json:"game"`
@@ -245,6 +319,9 @@ type GameDetail struct {
 	GameInfo   []GameInfoItem `json:"game_info"`
 	Events     []EventStage   `json:"events"`
 	Statistics []StatItem     `json:"statistics"`
+	Players    Players        `json:"players"`
+	HeadToHead HeadToHead     `json:"head_to_head"`
+	RecentForm RecentForm     `json:"recent_form"`
 }
 
 // Cards returns booking events (yellow/red) in chronological order.

@@ -88,6 +88,27 @@ func cardMark(eventType int) string {
 	}
 }
 
+var (
+	styleNum     = lipgloss.NewStyle().Foreground(colDim)
+	styleCaptain = lipgloss.NewStyle().Foreground(colAccent).Bold(true)
+	styleFormW   = lipgloss.NewStyle().Foreground(colBg).Background(colLive).Bold(true)
+	styleFormD   = lipgloss.NewStyle().Foreground(colBg).Background(colMuted).Bold(true)
+	styleFormL   = lipgloss.NewStyle().Foreground(colBg).Background(colRed).Bold(true)
+)
+
+// formMark renders a single recent-form result (0=L, 1=W, 2=D).
+func formMark(code int) string {
+	switch code {
+	case 1:
+		return styleFormW.Render(" G ")
+	case 2:
+		return styleFormD.Render(" E ")
+	case 0:
+		return styleFormL.Render(" P ")
+	}
+	return styleFormD.Render(" · ")
+}
+
 func teamColorBlock(hex string) string {
 	if hex == "" {
 		hex = "#444444"
