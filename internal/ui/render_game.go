@@ -68,9 +68,19 @@ func (m model) renderGame(width, height int) string {
 	card := stylePanel.Width(panelW).Render(
 		lipgloss.JoinVertical(lipgloss.Center, scoreRow, statusRow))
 
+	innerLeft := width - 2
+
 	var sections []string
 	sections = append(sections, lipgloss.NewStyle().Width(width).Align(lipgloss.Center).Render(stageLine))
 	sections = append(sections, card)
+
+	if goals := m.renderGoals(g); goals != "" {
+		sections = append(sections, "", styleSection.Render("⚽ Goles"), goals)
+	}
+
+	if cards := m.renderCards(g); cards != "" {
+		sections = append(sections, "", styleSection.Render("🟨 Tarjetas"), cards)
+	}
 
 	if len(g.TVNetworks) > 0 {
 		var tv []string
@@ -80,10 +90,14 @@ func (m model) renderGame(width, height int) string {
 		sections = append(sections, styleKV.Render("📺 TV: ")+styleKVval.Render(strings.Join(tv, ", ")))
 	}
 
-	if len(m.game.Game.GameInfo) > 0 {
+	if stats := m.renderStats(g, innerLeft); stats != "" {
+		sections = append(sections, "", styleSection.Render("📊 Estadísticas"), stats)
+	}
+
+	if len(g.GameInfo) > 0 {
 		sections = append(sections, "")
 		sections = append(sections, styleSection.Render("Información"))
-		for _, it := range m.game.Game.GameInfo {
+		for _, it := range g.GameInfo {
 			sections = append(sections, styleKV.Render(" "+it.Name+": ")+styleKVval.Render(it.Value))
 		}
 	}

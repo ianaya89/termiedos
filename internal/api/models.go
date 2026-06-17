@@ -14,6 +14,13 @@ type Colors struct {
 	TextColor string `json:"text_color"`
 }
 
+type Goal struct {
+	PlayerName    string  `json:"player_name"`
+	PlayerSName   string  `json:"player_sname"`
+	Time          float64 `json:"time"`
+	TimeToDisplay string  `json:"time_to_display"`
+}
+
 type Team struct {
 	Name      string `json:"name"`
 	ShortName string `json:"short_name"`
@@ -22,6 +29,7 @@ type Team struct {
 	CountryID string `json:"country_id"`
 	Colors    Colors `json:"colors"`
 	RedCards  int    `json:"red_cards"`
+	Goals     []Goal `json:"goals"`
 }
 
 type Status struct {
@@ -179,6 +187,53 @@ type GameInfoItem struct {
 	Value string `json:"value"`
 }
 
+// Event types observed in the gamecenter timeline.
+const (
+	EventGoal         = 1
+	EventOwnGoal      = 2
+	EventGoalAlt      = 3
+	EventYellowCard   = 4
+	EventRedCard      = 5
+	EventSecondYellow = 6
+	EventPenaltyGoal  = 7
+	EventSubstitution = 15
+)
+
+type EventItem struct {
+	Type      int      `json:"type"`
+	Time      string   `json:"time"`
+	Team      int      `json:"team"` // 1 = home, 2 = away
+	Texts     []string `json:"texts"`
+	JerseyNum int      `json:"player_jersey_num"`
+}
+
+func (e EventItem) IsCard() bool {
+	switch e.Type {
+	case EventYellowCard, EventRedCard, EventSecondYellow:
+		return true
+	}
+	return false
+}
+
+type EventRow struct {
+	Time   string      `json:"time"`
+	Events []EventItem `json:"events"`
+}
+
+type EventStage struct {
+	Name             string     `json:"name"`
+	ShowStageTitle   bool       `json:"show_stage_title"`
+	IsPenaltiesStage bool       `json:"is_penalties_stage"`
+	Scores           []float64  `json:"scores"`
+	Rows             []EventRow `json:"rows"`
+}
+
+type StatItem struct {
+	Name        string    `json:"name"`
+	Values      []string  `json:"values"`
+	Percentages []float64 `json:"percentages"`
+}
+
 type GameCenter struct {
 	TTL  int        `json:"TTL"`
 	Game GameDetail `json:"game"`
@@ -186,6 +241,26 @@ type GameCenter struct {
 
 type GameDetail struct {
 	Game
-	League   League         `json:"league"`
-	GameInfo []GameInfoItem `json:"game_info"`
+	League     League         `json:"league"`
+	GameInfo   []GameInfoItem `json:"game_info"`
+	Events     []EventStage   `json:"events"`
+	Statistics []StatItem     `json:"statistics"`
+}
+
+// Cards returns booking events (yellow/red) in chronological order.
+func (g GameDetail) Cards() []EventItem {
+	var out []EventItem
+	for _, st := range g.Events {
+		if st.IsPenaltiesStage {
+			continue
+		}
+		for _, r := range st.Rows {
+			for _, e := range r.Events {
+				if e.IsCard() {
+					out = append(out, e)
+				}
+			}
+		}
+	}
+	return out
 }

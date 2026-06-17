@@ -65,7 +65,28 @@ var (
 	styleSection = lipgloss.NewStyle().Bold(true).Foreground(colAccent)
 	styleKV      = lipgloss.NewStyle().Foreground(colMuted)
 	styleKVval   = lipgloss.NewStyle().Foreground(colText)
+
+	styleEventTime = lipgloss.NewStyle().Foreground(colDim)
+	styleGoal      = lipgloss.NewStyle().Foreground(colText)
+	styleYellow    = lipgloss.NewStyle().Foreground(lipgloss.Color("#E5C100"))
+	styleRed       = lipgloss.NewStyle().Foreground(colRed)
+	styleBarHome   = lipgloss.NewStyle().Foreground(colAccent)
+	styleBarAway   = lipgloss.NewStyle().Foreground(colDim)
 )
+
+var yellowMark = lipgloss.NewStyle().Foreground(lipgloss.Color("#E5C100")).Render("▮")
+var redMark = lipgloss.NewStyle().Foreground(colRed).Render("▮")
+
+func cardMark(eventType int) string {
+	switch eventType {
+	case 5: // straight red
+		return redMark
+	case 6: // second yellow → red
+		return yellowMark + redMark
+	default: // yellow
+		return yellowMark
+	}
+}
 
 func teamColorBlock(hex string) string {
 	if hex == "" {
