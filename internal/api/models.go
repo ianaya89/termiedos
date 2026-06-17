@@ -1,6 +1,14 @@
 package api
 
-import "strconv"
+import (
+	"strconv"
+	"time"
+)
+
+// promiedos serves kickoff times in Argentina time (UTC-3, no DST).
+var argZone = time.FixedZone("ART", -3*3600)
+
+const startTimeLayout = "02-01-2006 15:04"
 
 // Status enums observed from the promiedos API.
 const (
@@ -71,6 +79,15 @@ func (g Game) ScoreText() string {
 	return itoa(g.Scores[0]) + "-" + itoa(g.Scores[1])
 }
 
+// StartLocal parses StartTime (Argentina time) into the machine's local zone.
+func (g Game) StartLocal() (time.Time, bool) {
+	t, err := time.ParseInLocation(startTimeLayout, g.StartTime, argZone)
+	if err != nil {
+		return time.Time{}, false
+	}
+	return t.In(time.Local), true
+}
+
 // Clock returns the time/minute label shown on the row.
 func (g Game) Clock() string {
 	if g.IsLive() && g.GameTimeToDisplay != "" {
@@ -78,6 +95,9 @@ func (g Game) Clock() string {
 	}
 	if g.GameTimeStatusToDisplay != "" {
 		return g.GameTimeStatusToDisplay
+	}
+	if t, ok := g.StartLocal(); ok {
+		return t.Format("15:04")
 	}
 	if len(g.StartTime) >= 16 {
 		return g.StartTime[11:16]

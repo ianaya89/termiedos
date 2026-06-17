@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"strconv"
 	"strings"
 
 	"termiedos/internal/api"
@@ -55,6 +56,27 @@ func (m model) renderLeagueBar(lg api.League, width int) string {
 	return styleLeagueHeader.Width(width).Render(label)
 }
 
+// teamNameCell renders a team name padded to w, with a red-card badge next to
+// the score side. alignLeft places the badge at the start (away side).
+func teamNameCell(name string, reds, w int, st lipgloss.Style, alignLeft bool) string {
+	badge := ""
+	if reds > 0 {
+		badge = redMark
+		if reds > 1 {
+			badge += styleRed.Render(strconv.Itoa(reds))
+		}
+	}
+	avail := w - lipgloss.Width(badge)
+	if avail < 1 {
+		avail = 1
+	}
+	nm := st.Render(truncate(name, avail))
+	if alignLeft {
+		return padRight(badge+nm, w)
+	}
+	return padLeft(nm+badge, w)
+}
+
 func (m model) renderGameRow(g api.Game, width int, sel bool) string {
 	if len(g.Teams) < 2 {
 		return ""
@@ -89,8 +111,8 @@ func (m model) renderGameRow(g api.Game, width int, sel bool) string {
 		}
 	}
 
-	hName := hStyle.Render(padLeft(home.Name, nameW))
-	aName := aStyle.Render(padRight(away.Name, nameW))
+	hName := teamNameCell(home.Name, home.RedCards, nameW, hStyle, false)
+	aName := teamNameCell(away.Name, away.RedCards, nameW, aStyle, true)
 	hBlock := teamColorBlock(home.Colors.Color)
 	aBlock := teamColorBlock(away.Colors.Color)
 

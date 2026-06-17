@@ -11,6 +11,9 @@ y el proyecto sigue [Versionado Semántico](https://semver.org/lang/es/).
 
 ### Añadido
 
+- **Hora local**: la hora de inicio de los partidos se convierte de hora argentina (la que
+  entrega la API) a la zona horaria de la máquina.
+- **Tarjetas rojas en la lista**: indicador junto al equipo en la pantalla de resultados.
 - **Goleadores**: lista de autores de gol por equipo con el minuto en el detalle de partido.
 - **Tarjetas**: cronología de amonestaciones (amarilla, roja, doble amarilla) con minuto y equipo.
 - **Estadísticas**: posesión, remates, faltas y demás métricas como barras proporcionales.
