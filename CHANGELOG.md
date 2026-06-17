@@ -7,7 +7,7 @@ y el proyecto sigue [Versionado Semántico](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
-## [0.2.0] - 2026-06-16
+## [0.2.0] - 2026-06-17
 
 ### Añadido
 

@@ -15,7 +15,8 @@ renderiza en una interfaz de terminal con tema oscuro, colores de equipo y auto-
 partidos en vivo. Sin configuración: un solo binario y listo.
 
 **Características:** marcadores por fecha · tabla de posiciones con zonas de clasificación ·
-fixture por liga · detalle de partido · barra lateral de ligas · auto-recarga en vivo (15 s) ·
+fixture por liga · detalle de partido (goleadores, tarjetas, estadísticas, formaciones,
+forma e historial) · barra lateral de ligas · auto-recarga en vivo (15 s) ·
 navegación con teclado · binario único sin dependencias.
 
 ## Vistas
@@ -25,7 +26,7 @@ navegación con teclado · binario único sin dependencias.
 | **Resultados** (inicio) | Partidos del día agrupados por liga: hora/estado, colores de equipo y marcador. Navegación de fechas y recarga en vivo. |
 | **Posiciones** | Tabla de la liga con zonas de clasificación por color y soporte de grupos/fases. |
 | **Fixture** | Listado completo de partidos por ronda de la liga seleccionada. |
-| **Partido** | Marcador, estado, estadio/árbitro y canales de TV. |
+| **Partido** | Marcador y estado, goleadores, tarjetas, estadísticas, forma reciente, formaciones, historial (head-to-head), estadio/árbitro y canales de TV. |
 
 ## Instalación
 
@@ -93,8 +94,9 @@ termiedos --help     # ayuda y referencia de teclas
 
 | Tecla | Acción |
 | --- | --- |
-| `↑ ↓` / `k j` | Mover la selección |
+| `↑ ↓` / `k j` | Mover la selección · scroll en el detalle de partido |
 | `← →` / `h l` | Día anterior / siguiente (resultados) · cambiar de ronda (fixture) |
+| `g` / `G` · `pgup` / `pgdn` | Inicio / fin · paginar (detalle de partido) |
 | `t` | Volver a hoy |
 | `tab` | Cambiar entre barra lateral y panel · alternar Posiciones ⇄ Fixture |
 | `enter` | Abrir liga (cabecera/sidebar) o partido |
@@ -130,7 +132,8 @@ termiedos/
     ├── styles.go               # paleta y estilos (tema oscuro)
     ├── render_scores.go        # vista de resultados
     ├── render_league.go        # posiciones + fixture
-    ├── render_game.go          # detalle de partido
+    ├── render_game.go          # detalle de partido (layout + scroll)
+    ├── render_game_details.go  # goleadores, tarjetas, stats, forma, formaciones, historial
     └── smoke_test.go           # test de render contra datos reales
 ```
 
